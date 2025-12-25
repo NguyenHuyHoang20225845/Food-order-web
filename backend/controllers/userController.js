@@ -7,21 +7,18 @@ import validator from 'validator'
 const loginUser = async (req, res) => {
     const { email, password } = req.body;
     try {
-        // CHECK IF USER IS AVAILABLE WITH THIS ID
         const user = await userModel.findOne({ email });
         if (!user) {
             return res.json({ success: false, message: "User Doesn't Exist" })
         }
 
-        // MATCHING USER AND PASSWORD
         const isMatch = await bycrypt.compare(password, user.password);
         if (!isMatch) {
             return res.json({ success: false, message: "Invalid Credentials" })
         }
 
-        // IF PASSWORD MATCHES WE GENERATE TOKENS
-        const token = createToken(user._id);
-        res.json({ success: true, token })
+        const token = createToken(user);
+        res.json({ success: true, token, role: user.role, email: user.email })
     }
     catch (error) {
         console.log(error);
@@ -29,8 +26,11 @@ const loginUser = async (req, res) => {
     }
 }
 
-const createToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET)
+const createToken = (user) => {
+    return jwt.sign(
+        { id: user._id, email: user.email, role: user.role },
+        process.env.JWT_SECRET
+    )
 }
 
 // REGISTER USER
@@ -57,18 +57,15 @@ const registerUser = async (req, res) => {
         const salt = await bycrypt.genSalt(10)
         const hashedPassword = await bycrypt.hash(password, salt);
 
-        // NEW USER 
         const newUser = new userModel({
             username: username,
             email: email,
             password: hashedPassword
         })
-        // SAVE USER IN THE DATABASE
         const user = await newUser.save()
 
-        // CREATE A TOKEN (ABOVE ||)AND SEND IT TO USER USING RESPONSE
-        const token = createToken(user._id)
-        res.json({ success: true, token })
+        const token = createToken(user)
+        res.json({ success: true, token, role: user.role, email: user.email })
 
     }
 

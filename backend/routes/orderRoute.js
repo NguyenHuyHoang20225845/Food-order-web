@@ -9,11 +9,12 @@ import {
     updateAnyOrder
 } from '../controllers/orderController.js';
 import authMiddleware from '../middleware/auth.js'
+import adminMiddleware from '../middleware/admin.js';
 
 const orderRouter = express.Router();
 
-orderRouter.get('/getall', getAllOrders);
-orderRouter.put('/getall/:id', updateAnyOrder);
+orderRouter.get('/getall', authMiddleware, adminMiddleware, getAllOrders);
+orderRouter.put('/getall/:id', authMiddleware, adminMiddleware, updateAnyOrder);
 
 orderRouter.use(authMiddleware);
 // Order routes
