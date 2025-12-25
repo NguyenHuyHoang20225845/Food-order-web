@@ -8,6 +8,7 @@ import CheckoutPage from './pages/Checkout/Checkout';
 import AboutPage from './pages/AboutPage/AboutPage';
 import Menu from './pages/Menu/Menu';
 import PrivateRoute from './components/PrivateRoute/PrivateRoute';
+import AdminDashboard from './pages/Admin/AdminDashboard';
 
 import MyOrders from './pages/MyOredrs/MyOrders';
 import VerifyPaymentPage from './pages/VerifyPaymentPage/VerifyPaymentPage';
@@ -22,6 +23,10 @@ function App() {
       <Route path="/contact" element={<ContactPage />} />
       <Route path="/about" element={<AboutPage />} />
       <Route path="/menu" element={<Menu />} />
+      <Route
+        path="/admin"
+        element={<PrivateRoute requiredRole="admin"><AdminDashboard /></PrivateRoute>}
+      />
 
       {/* Payment verification */}
       <Route path="/myorder/verify" element={<VerifyPaymentPage />} />

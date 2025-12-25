@@ -8,7 +8,8 @@ import {
   FiShoppingCart,
   FiLogOut,
   FiKey,
-  FiPackage
+  FiPackage,
+  FiShield
 } from 'react-icons/fi';
 import { GiChefToque, GiForkKnifeSpoon } from 'react-icons/gi';
 import Login from '../Login/Login';
@@ -20,14 +21,22 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    Boolean(localStorage.getItem('loginData'))
-  );
+  const getSession = () => {
+    const token = localStorage.getItem('authToken');
+    const data = localStorage.getItem('loginData');
+    const parsed = data ? JSON.parse(data) : {};
+    return {
+      isAuthenticated: Boolean(token),
+      role: parsed.role || 'user',
+    };
+  };
+
+  const [session, setSession] = useState(getSession());
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
     setShowLoginModal(location.pathname === '/login');
-    setIsAuthenticated(Boolean(localStorage.getItem('loginData')));
+    setSession(getSession());
   }, [location.pathname]);
 
   const navLinks = [
@@ -35,27 +44,30 @@ const Navbar = () => {
     { name: 'Menu', href: '/menu', icon: <FiBook /> },
     { name: 'About', href: '/about', icon: <FiStar /> },
     { name: 'Contact', href: '/contact', icon: <FiPhone /> },
-    ...(isAuthenticated ? [
+    ...(session.isAuthenticated ? [
       { name: 'My Orders', href: '/myorder', icon: <FiPackage /> }
+    ] : []),
+    ...(session.role === 'admin' ? [
+      { name: 'Admin', href: '/admin', icon: <FiShield /> }
     ] : [])
   ];
 
-  const handleLoginSuccess = () => {
-    localStorage.setItem('loginData', JSON.stringify({ loggedIn: true }));
-    setIsAuthenticated(true);
+  const handleLoginSuccess = ({ role }) => {
+    setSession({ isAuthenticated: true, role: role || 'user' });
     navigate('/');
   };
 
   const handleLogout = () => {
     localStorage.removeItem('loginData');
-    setIsAuthenticated(false);
+    localStorage.removeItem('authToken');
+    setSession({ isAuthenticated: false, role: 'user' });
   };
 
   const renderDesktopAuthButton = () => {
-    return isAuthenticated ? (
+    return session.isAuthenticated ? (
       <button
         onClick={handleLogout}
-        className="px-3 lg:px-4 py-1.5 lg:py-2 bg-gradient-to-br from-amber-500 to-amber-700 text-[#2D1B0E] 
+        className="px-3 lg:px-4 py-1.5 lg:py-2 bg-gradient-to-br from-amber-500 to-amber-700 text-[#2D1B0E]
           rounded-2xl font-bold hover:shadow-lg hover:shadow-amber-600/40 transition-all 
           border-2 border-amber-600/20 flex items-center space-x-2 shadow-md shadow-amber-900/20 text-sm"
       >
@@ -76,7 +88,7 @@ const Navbar = () => {
   };
 
   const renderMobileAuthButton = () => {
-    return isAuthenticated ? (
+    return session.isAuthenticated ? (
       <button
         onClick={handleLogout}
         className="w-full px-4 py-3 bg-gradient-to-br from-amber-500 to-amber-700 text-[#2D1B0E] rounded-xl font-semibold flex items-center justify-center space-x-2"
