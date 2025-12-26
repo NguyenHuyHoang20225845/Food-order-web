@@ -1,7 +1,7 @@
 import userModel from "../modals/userModel.js";
-import jwt from 'jsonwebtoken'
-import bycrypt from 'bcryptjs'
-import validator from 'validator'
+import jwt from 'jsonwebtoken';
+import bycrypt from 'bcryptjs';
+import validator from 'validator';
 
 // LOGIN USER
 const loginUser = async (req, res) => {
@@ -48,7 +48,7 @@ const registerUser = async (req, res) => {
             return res.json({ success: false, message: "Please Enter A Valid Email" })
         }
 
-        // PASSWORD IS STRONG 
+        // PASSWORD IS STRONG
         if (password.length < 8) {
             return res.json({ success: false, message: "Please Enter A Strong Password" })
         }
@@ -75,4 +75,4 @@ const registerUser = async (req, res) => {
     }
 }
 
-export { loginUser, registerUser }
+export { loginUser, registerUser };

@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
         enum: ['user', 'admin'],
         default: 'user',
     },
-})
+});
 
 const userModel = mongoose.models.user || mongoose.model("user", userSchema);
 
