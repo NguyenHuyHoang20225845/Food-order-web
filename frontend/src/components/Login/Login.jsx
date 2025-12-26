@@ -13,7 +13,7 @@ import {
 } from 'react-icons/fa';
 import { inputBase, iconClass } from '../../assets/dummydata';
 
-const url = 'https://foodie-frenzy-backend.onrender.com'
+const url = 'http://localhost:4000'
 
 const Login = ({ onLoginSuccess, onClose }) => {
   const [formData, setFormData] = useState({
